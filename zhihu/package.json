@@ -1,0 +1,21 @@
+{
+  "name": "zhihu",
+  "version": "1.0.0",
+  "description": "\"模仿知乎的网站练习\"",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "'webpratice'"
+  ],
+  "author": "admos_han",
+  "license": "MIT",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2",
+    "gulp-notify": "^2.2.0",
+    "gulp-sass": "^2.3.2",
+    "webpack": "^1.13.1"
+  }
+}
