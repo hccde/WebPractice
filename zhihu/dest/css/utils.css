@@ -16,7 +16,8 @@ time, mark, audio, video {
   border: 0;
   font-size: 100%;
   font: inherit;
-  vertical-align: baseline; }
+  vertical-align: baseline;
+  font-family: 'Helvetica Neue',Helvetica,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',Arial,sans-serif; }
 
 input:focus {
   border: none;
@@ -48,8 +49,23 @@ table {
 .block-center {
   margin: 0 auto; }
 
+.mt2 {
+  margin-top: 20px; }
+
+.mt3 {
+  margin-top: 30px; }
+
 .mt6 {
   margin-top: 60px; }
 
 .mb2 {
   margin-bottom: 20px; }
+
+.mr1 {
+  margin-right: 10px; }
+
+.mb1 {
+  margin-bottom: 10px; }
+
+.border {
+  border: 1px solid #d5d5d5; }

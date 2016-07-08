@@ -16,7 +16,8 @@ time, mark, audio, video {
   border: 0;
   font-size: 100%;
   font: inherit;
-  vertical-align: baseline; }
+  vertical-align: baseline;
+  font-family: 'Helvetica Neue',Helvetica,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',Arial,sans-serif; }
 
 input:focus {
   border: none;
@@ -48,15 +49,47 @@ table {
 .block-center {
   margin: 0 auto; }
 
+.mt2 {
+  margin-top: 20px; }
+
+.mt3 {
+  margin-top: 30px; }
+
 .mt6 {
   margin-top: 60px; }
 
 .mb2 {
   margin-bottom: 20px; }
 
+.mr1 {
+  margin-right: 10px; }
+
+.mb1 {
+  margin-bottom: 10px; }
+
+.border {
+  border: 1px solid #d5d5d5; }
+
+html, body {
+  background-color: #f7fafc;
+  height: 100%;
+  min-height: 640px;
+  overflow: scroll; }
+
+.main {
+  height: 100%; }
+  .main:before {
+    content: '';
+    width: 1px;
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle; }
+
 .login-box {
-  height: auto;
-  width: 100%; }
+  height: 640px;
+  vertical-align: middle;
+  display: inline-block;
+  width: 99%; }
   .login-box section {
     width: 300px;
     margin: 0 auto; }
@@ -71,15 +104,96 @@ table {
 
 .login-box-subtitle {
   font-size: 18px;
-  color: #a8a9aa;
+  color: #868687;
   margin: 20px auto;
-  text-align: center; }
+  text-align: center;
+  font-weight: 500; }
 
 .login-box-caption {
-  font-size: 18px;
-  color: #a8a9aa;
-  width: 132px; }
+  color: #a4a6a7;
+  width: 132px;
+  font-size: 0px; }
   .login-box-caption span {
     width: 66px;
+    font-weight: 500;
     text-align: center;
-    display: inline-block; }
+    display: inline-block;
+    height: 30px;
+    font-size: 0px;
+    line-height: 30px; }
+    .login-box-caption span strong {
+      padding: 0 4px;
+      display: inline-block;
+      font-size: 18px; }
+      .login-box-caption span strong.active {
+        border-bottom: 2px solid #0f88eb;
+        color: #0f88eb; }
+
+.login-box-input-box {
+  width: 300px;
+  border-radius: 4px;
+  font-size: 18px; }
+  .login-box-input-box input {
+    border: none;
+    border-radius: 4px;
+    display: block;
+    width: 99.6%;
+    height: 48px;
+    font-size: 15px;
+    box-sizing: border-box;
+    padding: 0 5px; }
+    .login-box-input-box input + input {
+      border-top: 1px solid #e8e8e8; }
+  .login-box-input-box img {
+    position: absolute; }
+
+.login-box-button {
+  width: 300px;
+  height: 38px;
+  background-color: #0f88eb;
+  border: none;
+  border-radius: 3px;
+  color: white;
+  font-size: 15px;
+  cursor: pointer;
+  font-weight: 300; }
+
+.functuon-area {
+  width: 300px; }
+  .functuon-area input {
+    height: 14px; }
+  .functuon-area span {
+    font-size: 14px; }
+    .functuon-area span + span {
+      float: right; }
+  .functuon-area p {
+    font-size: 14px;
+    color: #787878; }
+
+.friend-link {
+  margin-top: 20px;
+  width: 100%;
+  height: 38px;
+  border: 1px solid #7eb7e9;
+  font-size: 14px;
+  color: #7eb7e9;
+  line-height: 38px;
+  text-align: center;
+  font-weight: 500;
+  border-radius: 3px; }
+  .friend-link .download-link-qrcode {
+    background-position: -78px 0;
+    width: 15px;
+    height: 15px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-top: -1px;
+    background-image: url("../image/sprites.png"); }
+
+.footer {
+  margin-top: -26px; }
+  .footer div {
+    text-align: center; }
+    .footer div span {
+      font-size: 12px;
+      color: #aebdc9; }

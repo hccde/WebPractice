@@ -5,6 +5,7 @@
 	<meta charset="utf-8">
 	<link rel="stylesheet" type="text/css" href="css/login.css"></head>
 <body>
+<div class="main">
 <div class="login-box"> 
 	<header class="mb2">
 		<h1 class="login-box-title block-center"></h1>
@@ -12,24 +13,34 @@
 	<h2 class="login-box-subtitle block-center">与世界分享你的知识、经验和见解</h2>
 	<section class="login-box-form">
 		<div class="login-box-caption block-center">
-			<span>注册</span>
-			<span>登录</span>
+			<span><strong class="active">注册</strong></span>
+			<span><strong>登录</strong></span>
 		</div>
-		<div class="two input">
-			<input type="input" name="account" required="required">
-			<input type="password" name="password" required="required"></div>
-		<div>
-			<input type="button" name="login"></div>
+		<div class="login-box-input-box mt2 border">
+		<form>
+			<input type="text" name="account" placeholder="姓名" required>
+			<input type="tel" name="password" placeholder="手机号（仅支持中国大陆）" required>
+			<input type="password" name="password" placeholder="密码（不少于 6 位）" required>
+			<input type="text" name="vaild" placeholder="验证码" required>
+			<!-- <img src="http://www.zhihu.com/captcha.gif?r=1467962185443"> -->
+			</div>
+		<div class="mb2 mt2">
+			<input type="submit" name="login" value="注册知乎" class="login-box-button">
+		</div>
+		</form>
 	</section>
 	<section class="functuon-area">
 		<input type="checkbox" name="rembermMe">
 		<span>记住我</span>
-		<span>无法登录</span>
-		<p>社交账号登录</p>
+		<span>无法登录?</span>
+		<p class="mt3">社交账号登录</p>
 	</section>
-	<section class="friend-link">下载知乎 App</section>
+	<section>
+		<div class="friend-link""><span class="download-link-qrcode mr1"></span>下载知乎 App</div>
+	</section>
+	</div>
 </div>
-	<footer>
+	<footer class="footer">
 		<div>
 			<span>© 2016 知乎</span>
 			<span>.</span>
