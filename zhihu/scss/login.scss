@@ -1,7 +1,36 @@
 @import "utils.scss";
 @import "var.scss";
 
-.title{
+.login-box{
+	height:auto;
+	width:100%;
+	section{
+		width:300px;
+		margin:0 auto;
+	}
+}
+
+.login-box-title{
 	background-image:url('../image/logo.png');
-	repeat:no-repeat;
+	background-repeat:no-repeat;
+	background-size:100%;
+	width:160px;
+	height:74px;
+	padding-bottom:20px;
+}
+.login-box-subtitle{
+	font-size:18px;
+	color:$font-color;
+	margin:20px auto;
+	text-align:center;
+}
+.login-box-caption{
+	font-size:18px;
+	color:$font-color;
+	width:132px;
+	span{
+		width: 66px;
+		text-align: center;
+		display: inline-block;
+	}
 }

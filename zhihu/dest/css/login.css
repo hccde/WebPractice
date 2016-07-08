@@ -45,6 +45,41 @@ table {
   border-collapse: collapse;
   border-spacing: 0; }
 
-.title {
+.block-center {
+  margin: 0 auto; }
+
+.mt6 {
+  margin-top: 60px; }
+
+.mb2 {
+  margin-bottom: 20px; }
+
+.login-box {
+  height: auto;
+  width: 100%; }
+  .login-box section {
+    width: 300px;
+    margin: 0 auto; }
+
+.login-box-title {
   background-image: url("../image/logo.png");
-  repeat: no-repeat; }
+  background-repeat: no-repeat;
+  background-size: 100%;
+  width: 160px;
+  height: 74px;
+  padding-bottom: 20px; }
+
+.login-box-subtitle {
+  font-size: 18px;
+  color: #a8a9aa;
+  margin: 20px auto;
+  text-align: center; }
+
+.login-box-caption {
+  font-size: 18px;
+  color: #a8a9aa;
+  width: 132px; }
+  .login-box-caption span {
+    width: 66px;
+    text-align: center;
+    display: inline-block; }

@@ -5,6 +5,7 @@
  	webpack = require('webpack'),
  	notify = require('gulp-notify')
 
+
  gulp.task('watch', () => {
  	gulp.watch('scss/*.scss', ['sass']);
  	gulp.watch('js/*.es6.js', ['babel', 'webpack']);
@@ -13,15 +14,14 @@
 
  gulp.task('sass', () => {
  	return gulp.src('scss/*.scss').pipe(sass().on('error', function() {
- 		var args = Array.prototype.slice.call(arguments);
+ 		let args = Array.prototype.slice.call(arguments);
 
  		notify.onError({
  			title: 'compile error',
  			message: '<%=error.message %>'
  		}).apply(this, args); //替换为当前对象
  		this.emit(); //提交
- 	})).
- 	pipe(gulp.dest('dest/css/'))
+ 	})).pipe(gulp.dest('dest/css/'))
  })
 
  gulp.task('webpack', function(cb) {
