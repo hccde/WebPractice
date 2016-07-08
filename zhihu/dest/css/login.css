@@ -145,7 +145,11 @@ html, body {
     .login-box-input-box input + input {
       border-top: 1px solid #e8e8e8; }
   .login-box-input-box img {
-    position: absolute; }
+    position: absolute;
+    width: 100px;
+    height: 38px;
+    right: 0px;
+    bottom: 5px; }
 
 .login-box-button {
   width: 300px;
