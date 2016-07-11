@@ -24,8 +24,14 @@
  	})).pipe(gulp.dest('dest/css/'))
  })
 
- gulp.task('webpack', function(cb) {
- 	webpack('./webpack.config.js', (err, stats) => {
+ gulp.task('webpack', function(cb) {//webpack 配置
+ 	webpack({
+	entry:'./dest/js/index.es6.js',
+	output:{
+		path:'./dest/output',
+		filename:"index.js"
+	}
+}, (err, stats) => {
  		console.log(stats.toString())
  		cb()
  	})
@@ -36,7 +42,7 @@
  })
 
  gulp.task('default',() => {
- 	gulp.run(['sass', 'babel', 'watch'])
+ 	gulp.run(['sass', 'babel', 'webpack','watch'])
  });
 
  gulp.run()
