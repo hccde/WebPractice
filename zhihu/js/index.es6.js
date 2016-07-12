@@ -1,3 +1,4 @@
+require('../scss/utils.scss');
 var Vue = require('vue');
 var Nav = require('../components/nav.vue');
 console.log('nav');
@@ -13,4 +14,4 @@ Vue.component('nav-component',Parent)
 
 new Vue({
 	el:'body'
-})
+});
