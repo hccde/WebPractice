@@ -1,15 +1,15 @@
+//depeart
  'use strict'
  let gulp = require('gulp'),
  	sass = require('gulp-sass'),
  	babel = require('gulp-babel'),
- 	webpack = require('webpack'),
- 	notify = require('gulp-notify')
+ 	notify = require('gulp-notify');
 
 
  gulp.task('watch', () => {
  	gulp.watch('scss/*.scss', ['sass']);
- 	gulp.watch('js/*.es6.js', ['babel', 'webpack']);
-
+ 	gulp.watch('js/*.es6.js', ['babel']);
+ 	// gulp.watch('dest/*.html',['default'])
  })
 
  gulp.task('sass', () => {
@@ -24,25 +24,13 @@
  	})).pipe(gulp.dest('dest/css/'))
  })
 
- gulp.task('webpack', function(cb) {//webpack 配置
- 	webpack({
-	entry:'./dest/js/index.es6.js',
-	output:{
-		path:'./dest/output',
-		filename:"index.js"
-	}
-}, (err, stats) => {
- 		console.log(stats.toString())
- 		cb()
- 	})
- })
 
  gulp.task('babel', () => {
  	return gulp.src('js/*.es6.js').pipe(babel()).pipe(gulp.dest('dest/js/'))
  })
 
  gulp.task('default',() => {
- 	gulp.run(['sass', 'babel', 'webpack','watch'])
+ 	gulp.run(['sass', 'babel','watch'])
  });
 
  gulp.run()
