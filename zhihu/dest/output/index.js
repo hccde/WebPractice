@@ -1,537 +1,4 @@
 /******/ (function(modules) { // webpackBootstrap
-/******/ 	var parentHotUpdateCallback = this["webpackHotUpdate"];
-/******/ 	this["webpackHotUpdate"] = 
-/******/ 	function webpackHotUpdateCallback(chunkId, moreModules) { // eslint-disable-line no-unused-vars
-/******/ 		hotAddUpdateChunk(chunkId, moreModules);
-/******/ 		if(parentHotUpdateCallback) parentHotUpdateCallback(chunkId, moreModules);
-/******/ 	}
-/******/ 	
-/******/ 	function hotDownloadUpdateChunk(chunkId) { // eslint-disable-line no-unused-vars
-/******/ 		var head = document.getElementsByTagName("head")[0];
-/******/ 		var script = document.createElement("script");
-/******/ 		script.type = "text/javascript";
-/******/ 		script.charset = "utf-8";
-/******/ 		script.src = __webpack_require__.p + "" + chunkId + "." + hotCurrentHash + ".hot-update.js";
-/******/ 		head.appendChild(script);
-/******/ 	}
-/******/ 	
-/******/ 	function hotDownloadManifest(callback) { // eslint-disable-line no-unused-vars
-/******/ 		if(typeof XMLHttpRequest === "undefined")
-/******/ 			return callback(new Error("No browser support"));
-/******/ 		try {
-/******/ 			var request = new XMLHttpRequest();
-/******/ 			var requestPath = __webpack_require__.p + "" + hotCurrentHash + ".hot-update.json";
-/******/ 			request.open("GET", requestPath, true);
-/******/ 			request.timeout = 10000;
-/******/ 			request.send(null);
-/******/ 		} catch(err) {
-/******/ 			return callback(err);
-/******/ 		}
-/******/ 		request.onreadystatechange = function() {
-/******/ 			if(request.readyState !== 4) return;
-/******/ 			if(request.status === 0) {
-/******/ 				// timeout
-/******/ 				callback(new Error("Manifest request to " + requestPath + " timed out."));
-/******/ 			} else if(request.status === 404) {
-/******/ 				// no update available
-/******/ 				callback();
-/******/ 			} else if(request.status !== 200 && request.status !== 304) {
-/******/ 				// other failure
-/******/ 				callback(new Error("Manifest request to " + requestPath + " failed."));
-/******/ 			} else {
-/******/ 				// success
-/******/ 				try {
-/******/ 					var update = JSON.parse(request.responseText);
-/******/ 				} catch(e) {
-/******/ 					callback(e);
-/******/ 					return;
-/******/ 				}
-/******/ 				callback(null, update);
-/******/ 			}
-/******/ 		};
-/******/ 	}
-
-/******/ 	
-/******/ 	
-/******/ 	// Copied from https://github.com/facebook/react/blob/bef45b0/src/shared/utils/canDefineProperty.js
-/******/ 	var canDefineProperty = false;
-/******/ 	try {
-/******/ 		Object.defineProperty({}, "x", {
-/******/ 			get: function() {}
-/******/ 		});
-/******/ 		canDefineProperty = true;
-/******/ 	} catch(x) {
-/******/ 		// IE will fail on defineProperty
-/******/ 	}
-/******/ 	
-/******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "3eb861c4ff09410d66bb"; // eslint-disable-line no-unused-vars
-/******/ 	var hotCurrentModuleData = {};
-/******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
-/******/ 	
-/******/ 	function hotCreateRequire(moduleId) { // eslint-disable-line no-unused-vars
-/******/ 		var me = installedModules[moduleId];
-/******/ 		if(!me) return __webpack_require__;
-/******/ 		var fn = function(request) {
-/******/ 			if(me.hot.active) {
-/******/ 				if(installedModules[request]) {
-/******/ 					if(installedModules[request].parents.indexOf(moduleId) < 0)
-/******/ 						installedModules[request].parents.push(moduleId);
-/******/ 					if(me.children.indexOf(request) < 0)
-/******/ 						me.children.push(request);
-/******/ 				} else hotCurrentParents = [moduleId];
-/******/ 			} else {
-/******/ 				console.warn("[HMR] unexpected require(" + request + ") from disposed module " + moduleId);
-/******/ 				hotCurrentParents = [];
-/******/ 			}
-/******/ 			return __webpack_require__(request);
-/******/ 		};
-/******/ 		for(var name in __webpack_require__) {
-/******/ 			if(Object.prototype.hasOwnProperty.call(__webpack_require__, name)) {
-/******/ 				if(canDefineProperty) {
-/******/ 					Object.defineProperty(fn, name, (function(name) {
-/******/ 						return {
-/******/ 							configurable: true,
-/******/ 							enumerable: true,
-/******/ 							get: function() {
-/******/ 								return __webpack_require__[name];
-/******/ 							},
-/******/ 							set: function(value) {
-/******/ 								__webpack_require__[name] = value;
-/******/ 							}
-/******/ 						};
-/******/ 					}(name)));
-/******/ 				} else {
-/******/ 					fn[name] = __webpack_require__[name];
-/******/ 				}
-/******/ 			}
-/******/ 		}
-/******/ 	
-/******/ 		function ensure(chunkId, callback) {
-/******/ 			if(hotStatus === "ready")
-/******/ 				hotSetStatus("prepare");
-/******/ 			hotChunksLoading++;
-/******/ 			__webpack_require__.e(chunkId, function() {
-/******/ 				try {
-/******/ 					callback.call(null, fn);
-/******/ 				} finally {
-/******/ 					finishChunkLoading();
-/******/ 				}
-/******/ 	
-/******/ 				function finishChunkLoading() {
-/******/ 					hotChunksLoading--;
-/******/ 					if(hotStatus === "prepare") {
-/******/ 						if(!hotWaitingFilesMap[chunkId]) {
-/******/ 							hotEnsureUpdateChunk(chunkId);
-/******/ 						}
-/******/ 						if(hotChunksLoading === 0 && hotWaitingFiles === 0) {
-/******/ 							hotUpdateDownloaded();
-/******/ 						}
-/******/ 					}
-/******/ 				}
-/******/ 			});
-/******/ 		}
-/******/ 		if(canDefineProperty) {
-/******/ 			Object.defineProperty(fn, "e", {
-/******/ 				enumerable: true,
-/******/ 				value: ensure
-/******/ 			});
-/******/ 		} else {
-/******/ 			fn.e = ensure;
-/******/ 		}
-/******/ 		return fn;
-/******/ 	}
-/******/ 	
-/******/ 	function hotCreateModule(moduleId) { // eslint-disable-line no-unused-vars
-/******/ 		var hot = {
-/******/ 			// private stuff
-/******/ 			_acceptedDependencies: {},
-/******/ 			_declinedDependencies: {},
-/******/ 			_selfAccepted: false,
-/******/ 			_selfDeclined: false,
-/******/ 			_disposeHandlers: [],
-/******/ 	
-/******/ 			// Module API
-/******/ 			active: true,
-/******/ 			accept: function(dep, callback) {
-/******/ 				if(typeof dep === "undefined")
-/******/ 					hot._selfAccepted = true;
-/******/ 				else if(typeof dep === "function")
-/******/ 					hot._selfAccepted = dep;
-/******/ 				else if(typeof dep === "object")
-/******/ 					for(var i = 0; i < dep.length; i++)
-/******/ 						hot._acceptedDependencies[dep[i]] = callback;
-/******/ 				else
-/******/ 					hot._acceptedDependencies[dep] = callback;
-/******/ 			},
-/******/ 			decline: function(dep) {
-/******/ 				if(typeof dep === "undefined")
-/******/ 					hot._selfDeclined = true;
-/******/ 				else if(typeof dep === "number")
-/******/ 					hot._declinedDependencies[dep] = true;
-/******/ 				else
-/******/ 					for(var i = 0; i < dep.length; i++)
-/******/ 						hot._declinedDependencies[dep[i]] = true;
-/******/ 			},
-/******/ 			dispose: function(callback) {
-/******/ 				hot._disposeHandlers.push(callback);
-/******/ 			},
-/******/ 			addDisposeHandler: function(callback) {
-/******/ 				hot._disposeHandlers.push(callback);
-/******/ 			},
-/******/ 			removeDisposeHandler: function(callback) {
-/******/ 				var idx = hot._disposeHandlers.indexOf(callback);
-/******/ 				if(idx >= 0) hot._disposeHandlers.splice(idx, 1);
-/******/ 			},
-/******/ 	
-/******/ 			// Management API
-/******/ 			check: hotCheck,
-/******/ 			apply: hotApply,
-/******/ 			status: function(l) {
-/******/ 				if(!l) return hotStatus;
-/******/ 				hotStatusHandlers.push(l);
-/******/ 			},
-/******/ 			addStatusHandler: function(l) {
-/******/ 				hotStatusHandlers.push(l);
-/******/ 			},
-/******/ 			removeStatusHandler: function(l) {
-/******/ 				var idx = hotStatusHandlers.indexOf(l);
-/******/ 				if(idx >= 0) hotStatusHandlers.splice(idx, 1);
-/******/ 			},
-/******/ 	
-/******/ 			//inherit from previous dispose call
-/******/ 			data: hotCurrentModuleData[moduleId]
-/******/ 		};
-/******/ 		return hot;
-/******/ 	}
-/******/ 	
-/******/ 	var hotStatusHandlers = [];
-/******/ 	var hotStatus = "idle";
-/******/ 	
-/******/ 	function hotSetStatus(newStatus) {
-/******/ 		hotStatus = newStatus;
-/******/ 		for(var i = 0; i < hotStatusHandlers.length; i++)
-/******/ 			hotStatusHandlers[i].call(null, newStatus);
-/******/ 	}
-/******/ 	
-/******/ 	// while downloading
-/******/ 	var hotWaitingFiles = 0;
-/******/ 	var hotChunksLoading = 0;
-/******/ 	var hotWaitingFilesMap = {};
-/******/ 	var hotRequestedFilesMap = {};
-/******/ 	var hotAvailibleFilesMap = {};
-/******/ 	var hotCallback;
-/******/ 	
-/******/ 	// The update info
-/******/ 	var hotUpdate, hotUpdateNewHash;
-/******/ 	
-/******/ 	function toModuleId(id) {
-/******/ 		var isNumber = (+id) + "" === id;
-/******/ 		return isNumber ? +id : id;
-/******/ 	}
-/******/ 	
-/******/ 	function hotCheck(apply, callback) {
-/******/ 		if(hotStatus !== "idle") throw new Error("check() is only allowed in idle status");
-/******/ 		if(typeof apply === "function") {
-/******/ 			hotApplyOnUpdate = false;
-/******/ 			callback = apply;
-/******/ 		} else {
-/******/ 			hotApplyOnUpdate = apply;
-/******/ 			callback = callback || function(err) {
-/******/ 				if(err) throw err;
-/******/ 			};
-/******/ 		}
-/******/ 		hotSetStatus("check");
-/******/ 		hotDownloadManifest(function(err, update) {
-/******/ 			if(err) return callback(err);
-/******/ 			if(!update) {
-/******/ 				hotSetStatus("idle");
-/******/ 				callback(null, null);
-/******/ 				return;
-/******/ 			}
-/******/ 	
-/******/ 			hotRequestedFilesMap = {};
-/******/ 			hotAvailibleFilesMap = {};
-/******/ 			hotWaitingFilesMap = {};
-/******/ 			for(var i = 0; i < update.c.length; i++)
-/******/ 				hotAvailibleFilesMap[update.c[i]] = true;
-/******/ 			hotUpdateNewHash = update.h;
-/******/ 	
-/******/ 			hotSetStatus("prepare");
-/******/ 			hotCallback = callback;
-/******/ 			hotUpdate = {};
-/******/ 			var chunkId = 0;
-/******/ 			{ // eslint-disable-line no-lone-blocks
-/******/ 				/*globals chunkId */
-/******/ 				hotEnsureUpdateChunk(chunkId);
-/******/ 			}
-/******/ 			if(hotStatus === "prepare" && hotChunksLoading === 0 && hotWaitingFiles === 0) {
-/******/ 				hotUpdateDownloaded();
-/******/ 			}
-/******/ 		});
-/******/ 	}
-/******/ 	
-/******/ 	function hotAddUpdateChunk(chunkId, moreModules) { // eslint-disable-line no-unused-vars
-/******/ 		if(!hotAvailibleFilesMap[chunkId] || !hotRequestedFilesMap[chunkId])
-/******/ 			return;
-/******/ 		hotRequestedFilesMap[chunkId] = false;
-/******/ 		for(var moduleId in moreModules) {
-/******/ 			if(Object.prototype.hasOwnProperty.call(moreModules, moduleId)) {
-/******/ 				hotUpdate[moduleId] = moreModules[moduleId];
-/******/ 			}
-/******/ 		}
-/******/ 		if(--hotWaitingFiles === 0 && hotChunksLoading === 0) {
-/******/ 			hotUpdateDownloaded();
-/******/ 		}
-/******/ 	}
-/******/ 	
-/******/ 	function hotEnsureUpdateChunk(chunkId) {
-/******/ 		if(!hotAvailibleFilesMap[chunkId]) {
-/******/ 			hotWaitingFilesMap[chunkId] = true;
-/******/ 		} else {
-/******/ 			hotRequestedFilesMap[chunkId] = true;
-/******/ 			hotWaitingFiles++;
-/******/ 			hotDownloadUpdateChunk(chunkId);
-/******/ 		}
-/******/ 	}
-/******/ 	
-/******/ 	function hotUpdateDownloaded() {
-/******/ 		hotSetStatus("ready");
-/******/ 		var callback = hotCallback;
-/******/ 		hotCallback = null;
-/******/ 		if(!callback) return;
-/******/ 		if(hotApplyOnUpdate) {
-/******/ 			hotApply(hotApplyOnUpdate, callback);
-/******/ 		} else {
-/******/ 			var outdatedModules = [];
-/******/ 			for(var id in hotUpdate) {
-/******/ 				if(Object.prototype.hasOwnProperty.call(hotUpdate, id)) {
-/******/ 					outdatedModules.push(toModuleId(id));
-/******/ 				}
-/******/ 			}
-/******/ 			callback(null, outdatedModules);
-/******/ 		}
-/******/ 	}
-/******/ 	
-/******/ 	function hotApply(options, callback) {
-/******/ 		if(hotStatus !== "ready") throw new Error("apply() is only allowed in ready status");
-/******/ 		if(typeof options === "function") {
-/******/ 			callback = options;
-/******/ 			options = {};
-/******/ 		} else if(options && typeof options === "object") {
-/******/ 			callback = callback || function(err) {
-/******/ 				if(err) throw err;
-/******/ 			};
-/******/ 		} else {
-/******/ 			options = {};
-/******/ 			callback = callback || function(err) {
-/******/ 				if(err) throw err;
-/******/ 			};
-/******/ 		}
-/******/ 	
-/******/ 		function getAffectedStuff(module) {
-/******/ 			var outdatedModules = [module];
-/******/ 			var outdatedDependencies = {};
-/******/ 	
-/******/ 			var queue = outdatedModules.slice();
-/******/ 			while(queue.length > 0) {
-/******/ 				var moduleId = queue.pop();
-/******/ 				var module = installedModules[moduleId];
-/******/ 				if(!module || module.hot._selfAccepted)
-/******/ 					continue;
-/******/ 				if(module.hot._selfDeclined) {
-/******/ 					return new Error("Aborted because of self decline: " + moduleId);
-/******/ 				}
-/******/ 				if(moduleId === 0) {
-/******/ 					return;
-/******/ 				}
-/******/ 				for(var i = 0; i < module.parents.length; i++) {
-/******/ 					var parentId = module.parents[i];
-/******/ 					var parent = installedModules[parentId];
-/******/ 					if(parent.hot._declinedDependencies[moduleId]) {
-/******/ 						return new Error("Aborted because of declined dependency: " + moduleId + " in " + parentId);
-/******/ 					}
-/******/ 					if(outdatedModules.indexOf(parentId) >= 0) continue;
-/******/ 					if(parent.hot._acceptedDependencies[moduleId]) {
-/******/ 						if(!outdatedDependencies[parentId])
-/******/ 							outdatedDependencies[parentId] = [];
-/******/ 						addAllToSet(outdatedDependencies[parentId], [moduleId]);
-/******/ 						continue;
-/******/ 					}
-/******/ 					delete outdatedDependencies[parentId];
-/******/ 					outdatedModules.push(parentId);
-/******/ 					queue.push(parentId);
-/******/ 				}
-/******/ 			}
-/******/ 	
-/******/ 			return [outdatedModules, outdatedDependencies];
-/******/ 		}
-/******/ 	
-/******/ 		function addAllToSet(a, b) {
-/******/ 			for(var i = 0; i < b.length; i++) {
-/******/ 				var item = b[i];
-/******/ 				if(a.indexOf(item) < 0)
-/******/ 					a.push(item);
-/******/ 			}
-/******/ 		}
-/******/ 	
-/******/ 		// at begin all updates modules are outdated
-/******/ 		// the "outdated" status can propagate to parents if they don't accept the children
-/******/ 		var outdatedDependencies = {};
-/******/ 		var outdatedModules = [];
-/******/ 		var appliedUpdate = {};
-/******/ 		for(var id in hotUpdate) {
-/******/ 			if(Object.prototype.hasOwnProperty.call(hotUpdate, id)) {
-/******/ 				var moduleId = toModuleId(id);
-/******/ 				var result = getAffectedStuff(moduleId);
-/******/ 				if(!result) {
-/******/ 					if(options.ignoreUnaccepted)
-/******/ 						continue;
-/******/ 					hotSetStatus("abort");
-/******/ 					return callback(new Error("Aborted because " + moduleId + " is not accepted"));
-/******/ 				}
-/******/ 				if(result instanceof Error) {
-/******/ 					hotSetStatus("abort");
-/******/ 					return callback(result);
-/******/ 				}
-/******/ 				appliedUpdate[moduleId] = hotUpdate[moduleId];
-/******/ 				addAllToSet(outdatedModules, result[0]);
-/******/ 				for(var moduleId in result[1]) {
-/******/ 					if(Object.prototype.hasOwnProperty.call(result[1], moduleId)) {
-/******/ 						if(!outdatedDependencies[moduleId])
-/******/ 							outdatedDependencies[moduleId] = [];
-/******/ 						addAllToSet(outdatedDependencies[moduleId], result[1][moduleId]);
-/******/ 					}
-/******/ 				}
-/******/ 			}
-/******/ 		}
-/******/ 	
-/******/ 		// Store self accepted outdated modules to require them later by the module system
-/******/ 		var outdatedSelfAcceptedModules = [];
-/******/ 		for(var i = 0; i < outdatedModules.length; i++) {
-/******/ 			var moduleId = outdatedModules[i];
-/******/ 			if(installedModules[moduleId] && installedModules[moduleId].hot._selfAccepted)
-/******/ 				outdatedSelfAcceptedModules.push({
-/******/ 					module: moduleId,
-/******/ 					errorHandler: installedModules[moduleId].hot._selfAccepted
-/******/ 				});
-/******/ 		}
-/******/ 	
-/******/ 		// Now in "dispose" phase
-/******/ 		hotSetStatus("dispose");
-/******/ 		var queue = outdatedModules.slice();
-/******/ 		while(queue.length > 0) {
-/******/ 			var moduleId = queue.pop();
-/******/ 			var module = installedModules[moduleId];
-/******/ 			if(!module) continue;
-/******/ 	
-/******/ 			var data = {};
-/******/ 	
-/******/ 			// Call dispose handlers
-/******/ 			var disposeHandlers = module.hot._disposeHandlers;
-/******/ 			for(var j = 0; j < disposeHandlers.length; j++) {
-/******/ 				var cb = disposeHandlers[j];
-/******/ 				cb(data);
-/******/ 			}
-/******/ 			hotCurrentModuleData[moduleId] = data;
-/******/ 	
-/******/ 			// disable module (this disables requires from this module)
-/******/ 			module.hot.active = false;
-/******/ 	
-/******/ 			// remove module from cache
-/******/ 			delete installedModules[moduleId];
-/******/ 	
-/******/ 			// remove "parents" references from all children
-/******/ 			for(var j = 0; j < module.children.length; j++) {
-/******/ 				var child = installedModules[module.children[j]];
-/******/ 				if(!child) continue;
-/******/ 				var idx = child.parents.indexOf(moduleId);
-/******/ 				if(idx >= 0) {
-/******/ 					child.parents.splice(idx, 1);
-/******/ 				}
-/******/ 			}
-/******/ 		}
-/******/ 	
-/******/ 		// remove outdated dependency from module children
-/******/ 		for(var moduleId in outdatedDependencies) {
-/******/ 			if(Object.prototype.hasOwnProperty.call(outdatedDependencies, moduleId)) {
-/******/ 				var module = installedModules[moduleId];
-/******/ 				var moduleOutdatedDependencies = outdatedDependencies[moduleId];
-/******/ 				for(var j = 0; j < moduleOutdatedDependencies.length; j++) {
-/******/ 					var dependency = moduleOutdatedDependencies[j];
-/******/ 					var idx = module.children.indexOf(dependency);
-/******/ 					if(idx >= 0) module.children.splice(idx, 1);
-/******/ 				}
-/******/ 			}
-/******/ 		}
-/******/ 	
-/******/ 		// Not in "apply" phase
-/******/ 		hotSetStatus("apply");
-/******/ 	
-/******/ 		hotCurrentHash = hotUpdateNewHash;
-/******/ 	
-/******/ 		// insert new code
-/******/ 		for(var moduleId in appliedUpdate) {
-/******/ 			if(Object.prototype.hasOwnProperty.call(appliedUpdate, moduleId)) {
-/******/ 				modules[moduleId] = appliedUpdate[moduleId];
-/******/ 			}
-/******/ 		}
-/******/ 	
-/******/ 		// call accept handlers
-/******/ 		var error = null;
-/******/ 		for(var moduleId in outdatedDependencies) {
-/******/ 			if(Object.prototype.hasOwnProperty.call(outdatedDependencies, moduleId)) {
-/******/ 				var module = installedModules[moduleId];
-/******/ 				var moduleOutdatedDependencies = outdatedDependencies[moduleId];
-/******/ 				var callbacks = [];
-/******/ 				for(var i = 0; i < moduleOutdatedDependencies.length; i++) {
-/******/ 					var dependency = moduleOutdatedDependencies[i];
-/******/ 					var cb = module.hot._acceptedDependencies[dependency];
-/******/ 					if(callbacks.indexOf(cb) >= 0) continue;
-/******/ 					callbacks.push(cb);
-/******/ 				}
-/******/ 				for(var i = 0; i < callbacks.length; i++) {
-/******/ 					var cb = callbacks[i];
-/******/ 					try {
-/******/ 						cb(outdatedDependencies);
-/******/ 					} catch(err) {
-/******/ 						if(!error)
-/******/ 							error = err;
-/******/ 					}
-/******/ 				}
-/******/ 			}
-/******/ 		}
-/******/ 	
-/******/ 		// Load self accepted modules
-/******/ 		for(var i = 0; i < outdatedSelfAcceptedModules.length; i++) {
-/******/ 			var item = outdatedSelfAcceptedModules[i];
-/******/ 			var moduleId = item.module;
-/******/ 			hotCurrentParents = [moduleId];
-/******/ 			try {
-/******/ 				__webpack_require__(moduleId);
-/******/ 			} catch(err) {
-/******/ 				if(typeof item.errorHandler === "function") {
-/******/ 					try {
-/******/ 						item.errorHandler(err);
-/******/ 					} catch(err) {
-/******/ 						if(!error)
-/******/ 							error = err;
-/******/ 					}
-/******/ 				} else if(!error)
-/******/ 					error = err;
-/******/ 			}
-/******/ 		}
-/******/ 	
-/******/ 		// handle errors in accept handlers and self accepted module load
-/******/ 		if(error) {
-/******/ 			hotSetStatus("fail");
-/******/ 			return callback(error);
-/******/ 		}
-/******/ 	
-/******/ 		hotSetStatus("idle");
-/******/ 		callback(null, outdatedModules);
-/******/ 	}
-
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
 
@@ -546,14 +13,11 @@
 /******/ 		var module = installedModules[moduleId] = {
 /******/ 			exports: {},
 /******/ 			id: moduleId,
-/******/ 			loaded: false,
-/******/ 			hot: hotCreateModule(moduleId),
-/******/ 			parents: hotCurrentParents,
-/******/ 			children: []
+/******/ 			loaded: false
 /******/ 		};
 
 /******/ 		// Execute the module function
-/******/ 		modules[moduleId].call(module.exports, module, module.exports, hotCreateRequire(moduleId));
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
 
 /******/ 		// Flag the module as loaded
 /******/ 		module.loaded = true;
@@ -572,11 +36,8 @@
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "";
 
-/******/ 	// __webpack_hash__
-/******/ 	__webpack_require__.h = function() { return hotCurrentHash; };
-
 /******/ 	// Load entry module and return exports
-/******/ 	return hotCreateRequire(0)(0);
+/******/ 	return __webpack_require__(0);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -591,10 +52,10 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	__webpack_require__(2);
-	var Vue = __webpack_require__(6);
-	var Nav = __webpack_require__(8);
-	console.log('nav');
-	console.log(Nav);
+	var Vue = __webpack_require__(6),
+	    Nav = __webpack_require__(8);
+	Item = __webpack_require__(22);
+
 	var Parent = Vue.extend({
 		template: '<nav><navtem></navtem></nav>',
 		components: {
@@ -602,6 +63,14 @@
 		}
 	});
 
+	var List = Vue.extend({
+		template: '<ul><item></item></ul>',
+		components: {
+			'item': Item
+		}
+	});
+
+	Vue.component('list-component', List);
 	Vue.component('nav-component', Parent);
 
 	new Vue({
@@ -621,11 +90,11 @@
 	var update = __webpack_require__(5)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
-	if(true) {
+	if(false) {
 		// When the styles change, update the <style> tags
 		if(!content.locals) {
-			module.hot.accept(3, function() {
-				var newContent = __webpack_require__(3);
+			module.hot.accept("!!./../node_modules/css-loader/index.js!./../node_modules/sass-loader/index.js!./utils.scss", function() {
+				var newContent = require("!!./../node_modules/css-loader/index.js!./../node_modules/sass-loader/index.js!./utils.scss");
 				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
 				update(newContent);
 			});
@@ -643,7 +112,7 @@
 
 
 	// module
-	exports.push([module.id, "html, body, div, span, applet, object, iframe,\nh1, h2, h3, h4, h5, h6, p, blockquote, pre,\na, abbr, acronym, address, big, cite, code,\ndel, dfn, em, img, ins, kbd, q, s, samp,\nsmall, strike, strong, sub, sup, tt, var,\nb, u, i, center,\ndl, dt, dd, ol, ul, li,\nfieldset, form, label, legend,\ntable, caption, tbody, tfoot, thead, tr, th, td,\narticle, aside, canvas, details, embed,\nfigure, figcaption, footer, header, hgroup,\nmenu, nav, output, ruby, section, summary,\ntime, mark, audio, video {\n  margin: 0;\n  padding: 0;\n  border: 0;\n  font-size: 100%;\n  font: inherit;\n  vertical-align: baseline;\n  font-family: 'Helvetica Neue',Helvetica,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',Arial,sans-serif; }\n\ninput:focus {\n  border: none;\n  outline: none; }\n\n/* HTML5 display-role reset for older browsers */\narticle, aside, details, figcaption, figure,\nfooter, header, hgroup, menu, nav, section {\n  display: block; }\n\nbody {\n  line-height: 1; }\n\nol, ul {\n  list-style: none; }\n\nblockquote, q {\n  quotes: none; }\n\nblockquote:before, blockquote:after,\nq:before, q:after {\n  content: '';\n  content: none; }\n\ntable {\n  border-collapse: collapse;\n  border-spacing: 0; }\n\n.block-center {\n  margin: 0 auto; }\n\n.mt2 {\n  margin-top: 20px; }\n\n.mt3 {\n  margin-top: 30px; }\n\n.mt6 {\n  margin-top: 60px; }\n\n.mb2 {\n  margin-bottom: 20px; }\n\n.mr1 {\n  margin-right: 10px; }\n\n.mb1 {\n  margin-bottom: 10px; }\n\n.border {\n  border: 1px solid #d5d5d5; }\n", ""]);
+	exports.push([module.id, "html, body, div, span, applet, object, iframe,\nh1, h2, h3, h4, h5, h6, p, blockquote, pre,\na, abbr, acronym, address, big, cite, code,\ndel, dfn, em, img, ins, kbd, q, s, samp,\nsmall, strike, strong, sub, sup, tt, var,\nb, u, i, center,\ndl, dt, dd, ol, ul, li,\nfieldset, form, label, legend,\ntable, caption, tbody, tfoot, thead, tr, th, td,\narticle, aside, canvas, details, embed,\nfigure, figcaption, footer, header, hgroup,\nmenu, nav, output, ruby, section, summary,\ntime, mark, audio, video {\n  margin: 0;\n  padding: 0;\n  border: 0;\n  font-size: 100%;\n  font: inherit;\n  vertical-align: baseline;\n  font-family: 'Helvetica Neue',Helvetica,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',Arial,sans-serif; }\n\ninput:focus {\n  border: none;\n  outline: none; }\n\n/* HTML5 display-role reset for older browsers */\narticle, aside, details, figcaption, figure,\nfooter, header, hgroup, menu, nav, section {\n  display: block; }\n\nbody {\n  line-height: 1; }\n\nol, ul {\n  list-style: none; }\n\nblockquote, q {\n  quotes: none; }\n\nblockquote:before, blockquote:after,\nq:before, q:after {\n  content: '';\n  content: none; }\n\ntable {\n  border-collapse: collapse;\n  border-spacing: 0; }\n\n.block-center {\n  margin: 0 auto; }\n\n.mt2 {\n  margin-top: 20px; }\n\n.ml2 {\n  margin-left: 20px; }\n\n.mt3 {\n  margin-top: 30px; }\n\n.mt6 {\n  margin-top: 60px; }\n\n.mb2 {\n  margin-bottom: 20px; }\n\n.mr1 {\n  margin-right: 10px; }\n\n.mb1 {\n  margin-bottom: 10px; }\n\n.ml1 {\n  margin-left: 10px; }\n\n.border {\n  border: 1px solid #d5d5d5; }\n\n.ellipsis {\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  overflow: hidden; }\n", ""]);
 
 	// exports
 
@@ -11178,9 +10647,9 @@
 	if (__vue_template__) {
 	(typeof module.exports === "function" ? (module.exports.options || (module.exports.options = {})) : module.exports).template = __vue_template__
 	}
-	if (true) {(function () {  module.hot.accept()
-	  var hotAPI = __webpack_require__(15)
-	  hotAPI.install(__webpack_require__(6), false)
+	if (false) {(function () {  module.hot.accept()
+	  var hotAPI = require("vue-hot-reload-api")
+	  hotAPI.install(require("vue"), false)
 	  if (!hotAPI.compatible) return
 	  var id = "_v-ddae2a6c/nav.vue"
 	  if (!module.hot.data) {
@@ -11203,11 +10672,11 @@
 	var update = __webpack_require__(12)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
-	if(true) {
+	if(false) {
 		// When the styles change, update the <style> tags
 		if(!content.locals) {
-			module.hot.accept(10, function() {
-				var newContent = __webpack_require__(10);
+			module.hot.accept("!!./../node_modules/css-loader/index.js!./../node_modules/vue-loader/lib/style-rewriter.js!./../node_modules/vue-loader/lib/selector.js?type=style&index=0!./nav.vue", function() {
+				var newContent = require("!!./../node_modules/css-loader/index.js!./../node_modules/vue-loader/lib/style-rewriter.js!./../node_modules/vue-loader/lib/selector.js?type=style&index=0!./nav.vue");
 				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
 				update(newContent);
 			});
@@ -11225,7 +10694,7 @@
 
 
 	// module
-	exports.push([module.id, "\n\tinput{\n\t\toutline: none;\n\t\tborder:none;\n\t\tpadding: 0;\n\t\tmargin: 0;\n\t}\n\t.nav-wrap{\n\t\theight: 40px;\n\t\tbackground-color: #0769ca;\n\t\tpadding-left: 5px;\n\t\tpadding-right: 10px;\n\t\tcolor: white;\n\t}\t\n\t.nav-logo{\n\t\theight:30px; \n\t\tmargin: 5px 0px;\n\t\twidth:61px;\n\t\tbackground-image: url(" + __webpack_require__(11) + ");\n\t\tdisplay: inline-block;\n\t}\n\t.nav-search-wrap{\n\t\twidth: 240px;\n\t\theight: 100%;\n\t\tdisplay: inline-block;\n\t\tvertical-align: top;\n\t\tmargin-left: 10px;\n\t\tfont-size: 0px;\n\t}\n\t.nav-search-wrap input{\n\t\t\theight: 30px;\n\t\t\tmargin-top: 5px;\n\t\t\tbackground-color:#e1eaf2;\n\t\t\tborder-top-left-radius: 4px;\n\t\t\tborder-bottom-left-radius: 4px;\nbox-shadow: inset 0 3px 8px rgba(0,0,0,.24);\n    \t\ttext-indent: 1em;\n    \t\twidth:200px;\n\t}\n\t.nav-search-wrap div{\n\t\theight: 30px;\n\t\twidth: 40px;\n\t\tborder-top-right-radius:4px;\n\t\tborder-bottom-right-radius: 4px; \n\t\tbackground-color: #0e79e9;\nbox-shadow: outset 0 3px 8px rgba(0,0,0,.24);\n\t\tdisplay: inline-block;\n\t\tvertical-align: top;\n\t\tmargin-top: 5px;\n\t}\n", ""]);
+	exports.push([module.id, "\n\tinput{\n\t\toutline: none;\n\t\tborder:none;\n\t\tpadding: 0;\n\t\tmargin: 0;\n\t}\n\t.nav-outer{\n\t\tbackground:-webkit-linear-gradient(top,#086ed5,#055db5);\n\t\tbackground:linear-gradient(to bottom,#086ed5,#055db5);\n\t}\n\t.nav-wrap{\n\t\theight: 46px;\n\t\tborder-bottom: 1px solid #044e97;\n\t\tpadding-left: 5px;\n\t\tpadding-right: 10px;\n\t\tcolor: white;\n\t\tmargin:auto auto;\n\t\twidth: 960px;\n\t}\t\n\t.nav-logo{\n\t\theight:30px; \n\t\tmargin: 8px 0px;\n\t\twidth:61px;\n\t\tbackground-image: url(" + __webpack_require__(11) + ");\n\t\tdisplay: inline-block;\n\t}\n\t.nav-search-wrap{\n\t\twidth: 367px;\n\t\theight: 100%;\n\t\tdisplay: inline-block;\n\t\tvertical-align: top;\n\t\tmargin-left: 10px;\n\t\tfont-size: 0px;\n\t}\n\t.nav-search-wrap input{\n\t\t\theight: 17px;\n\t\t\tpadding:7px 10px;\n\t\t\tborder: 1px solid #045bb2;\n\t\t\tmargin-top: 5px;\n\t\t\tbackground-color:#e1eaf2;\n\t\t\tborder-top-left-radius: 4px;\n\t\t\tborder-bottom-left-radius: 4px;\nbox-shadow: inset 0 3px 8px rgba(0,0,0,.24);\n    \t\twidth:305px;\n    \t\tborder-right: 0;\n    \t\tcolor: #49525c;\n    \t\tfont-size: 14px;\n    \t\tline-height: 17px;\n\t}\n\t.nav-search-wrap input:focus{\n\t\tbackground-color: white;\n\t}\n\t.nav-search-wrap div{\n\t\theight: 31px;\n\t\twidth: 40px;\n\t\tborder-top-right-radius:4px;\n\t\tborder-bottom-right-radius: 4px; \n\t\tbackground-color: #0e75de;\nbox-shadow: 0 0 5px  rgba(0,0,0,.1);\n\t\tdisplay: inline-block;\n\t\tvertical-align: top;\n\t\tmargin-top: 5px;\n\t\tborder:1px solid #045bb2;\n\t\tborder-right: 0px;\n\t\tcursor: pointer;\n\t}\n\t.nav-search-wrap div span{\n\t\tbackground-image: url(" + __webpack_require__(21) + ");\n\t\tbackground-position: -82px 0;\n    \twidth: 15px;\n    \theight: 15px;\n    \tmargin-top: 8px;\n    \tmargin-left: 12.5px;\n    \tdisplay: inline-block;\n    }\n\n\t.nav-list{\n\t\tdisplay: inline-block;\n\t\tfont-size: 0;\n\t\tvertical-align: top;\n\t\tmargin-left: 10px;\n\t}\n\t.nav-list li {\n\t\twidth: 54px;\n\t\tdisplay: inline-block;\n\t\tfont-size: 14px;\n\t\theight:45px;\n\t\ttext-align: center;\n\t}\n\t.nav-list li a{\n\t\twidth: 54px;\n\t\tline-height: 45px;\n\t\tcursor: pointer;\n\t\tdisplay:inline-block;\n\t}\n\t.nav-list-active{\n\t\tbackground-color:#075fb6\n\t}\n\t.nav-ask-quest{\n\t\tmargin-left: 90px;\n\t\twidth: 66px;\n\t\tvertical-align: top;\n\t\tmargin-top: 6px;\n\t\theight: 34px;\n\t\tborder:1px solid #045bb2;\n\t\tborder-radius: 4px;\n\t\tcolor: white;\n\t\tfont-size: 14px;\n\t\ttext-align: center;\n\t\tbackground-color: #0e75de;\n    \tbox-shadow: 0 0 5px  rgba(0,0,0,.1);\n\n\t}\n\t.nav-person{\n\t\tdisplay: inline-block;\n\t\tvertical-align: top;\n\t\tcursor: pointer;\n\t}\n\t.nav-person span{\n\t\tdisplay: inline-block;\n\t\tvertical-align: top;\n\t\tmargin-top: 14px;\n\t\twidth: 60px;\n\t\tfont-size: 14px;\n\t\theight: 18px;\n\t\tmargin-left: 5px;\n\t}\n\t.nav-person-head{\n\t\tmargin-top: 9px;\n\t\twidth:27px;\n\t\theight:27px;\n\t\tdisplay: inline-block;\n\t\tbackground-image: url(" + __webpack_require__(20) + ");\n\t}\n", ""]);
 
 	// exports
 
@@ -11467,8 +10936,7 @@
 	module.exports = {
 		data: function data() {
 			return {
-				message: "hello tem",
-				navitems: [{ name: "首页" }, { name: "首页2" }]
+				navitems: [{ name: "首页", url: "", active: "nav-list-active" }, { name: "话题", url: "" }, { name: "发现", url: "" }, { name: "消息", url: "" }]
 			};
 		}
 	};
@@ -11477,311 +10945,121 @@
 /* 14 */
 /***/ function(module, exports) {
 
-	module.exports = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n<div class=\"nav-wrap\">\n\t<div class=\"nav-logo\">\n\t\t\n\t</div>\n\t<div class=\"nav-search-wrap\">\n\t\t<input type=\"type\" name=\"search\" required=\"\" placeholder=\"搜索你感兴趣的内容...\">\n\t\t<div>\n\t\t\tdsdf\n\t\t</div>\n\t</div>\n\t<ul class=\"nav-list\">\n\t\t<li v-for=\"item in navitems\">\n\t\t\titem.name\n\t\t</li>\n\t</ul>\n\t<input type=\"button\" name=\"ask\" value=\"提问\">\n\t<div class=\"nav-person\">\n\t\t<div>\n\t\t\t\n\t\t</div>\n\t\t<span>\n\t\t\tvgyyuiop\n\t\t</span>\n\t</div>\n</div>\n";
+	module.exports = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n<div class=\"nav-outer\">\n\t<div class=\"nav-wrap\">\n\t\t<div class=\"nav-logo\">\n\t\t\t\n\t\t</div>\n\t\t<div class=\"nav-search-wrap\">\n\t\t\t<input type=\"type\" name=\"search\" required=\"\" placeholder=\"搜索你感兴趣的内容...\">\n\t\t\t<div>\n\t\t\t<span>\n\t\t\t\t\n\t\t\t</span>\n\t\t\t</div>\n\t\t</div>\n\t\t<ul class=\"nav-list\">\n\t\t\t<li v-for=\"item in navitems\" class=\"{{item.active}}\">\n\t\t\t\t<a>{{item.name}}</a>\n\t\t\t</li>\n\t\t</ul>\n\t\t<input type=\"button\" name=\"ask\" value=\"提问\" class=\"nav-ask-quest\">\n\t\t<div class=\"nav-person ml2\">\n\t\t\t<div class=\"nav-person-head\">\n\t\t\t\t\n\t\t\t</div>\n\t\t\t<span class=\"ellipsis\">\n\t\t\t\tvgyyuiof\n\t\t\t</span>\n\t\t</div>\n\t</div>\n</div>\n";
 
 /***/ },
-/* 15 */
+/* 15 */,
+/* 16 */,
+/* 17 */,
+/* 18 */,
+/* 19 */,
+/* 20 */
 /***/ function(module, exports) {
 
-	var Vue // late bind
-	var map = Object.create(null)
-	var shimmed = false
-	var isBrowserify = false
+	module.exports = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4QBYRXhpZgAATU0AKgAAAAgAAgESAAMAAAABAAEAAIdpAAQAAAABAAAAJgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAACfqADAAQAAAABAAABZgAAAAD/2wBDAAEBAQEBAQEBAQEBAQEBAQIBAQEBAQIBAQECAgICAgICAgIDAwQDAwMDAwICAwQDAwQEBAQEAgMFBQQEBQQEBAT/2wBDAQEBAQEBAQIBAQIEAwIDBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAT/wAARCAAZABkDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD+a608WWc+pacl1PcxXN/YpqmnQapZXGlXGoWzN8l1FHKiGWJscSRgqcHBNaF1qnn3CkziJllYRnyt0Xl4PUdyMjAr2T9kbwV4n+KXh2z8Z/EbxU2uaXZeENY8HeDbTULA32raal55NnNfedMP3kIjjDRW4bMUgEmfmGPGNf022tr+6WJpbiG1upYI7kRmFbtUldFkK5JRnChtmTjd1r7HLs9hmVatRj8VOydr2/HqmrfkYY7Jq+CwtHFz+Gpe17X0SfTo73X46s7fQvhb4j+LPh7VJvD3jw+HdS0+4bT9K07T9LW51jxDcC2e6ihSQsFt1Owru+87MACNpz8wf2H+0t/0EvHH/gBcf/G6/RH9k3U9WXUNf8D6RpepazqWtxDxBYabpOl/a7yM2qhJ5TcDlBFGYiMgnEj7cfMG+3v+GZviH/0S+L/wZxf/AByvCz3HZ5Qxy+pYepOm4rWKm1dN31jpfuumnc+iyvIsizDLaU8RXhCqr813G929NJbabW3R43oPwWktNETwN8OZJtDstLTTTOsuv2ei30cdvAlhAsUkjr5h3eZJIoOdzlnAUgnx/wCIfwL8VeGNRstNubfw/fWt7p8mrxalF4t0hIW+zGNboyM1xtDq8i8ZJYMSBgHHt/ib/kNx/wDYcH/ot6+ef2kP+RWtv+v6+/8ASeCvS4cwsKHtcFR0ip2u0m3eTV27X+9vXVWvY/IsTxVmuLz3K5YmV4Ymm7wWkItUoVLxWut7rde60pczipHypD8QvjV+zP4uuPi1pnj7R/C3ie4j1Dwtpg0XXfDni7fZ3sS3DWq2iyXKjdHDARcrGEzEVLmQslch/wAPGP2zv+jgPGH/AIK9C/8AkaviTxL/AMjQ3/XCxrpa/YMTVpYvF18thhqMFhqlSCajO8lzySuvaJLlULK173bbbPYwcXSoRxM5yk6iUtWtPJWXn/S2/9k="
 
-	/**
-	 * Determine compatibility and apply patch.
-	 *
-	 * @param {Function} vue
-	 * @param {Boolean} browserify
-	 */
+/***/ },
+/* 21 */
+/***/ function(module, exports) {
 
-	exports.install = function (vue, browserify) {
-	  if (shimmed) return
-	  shimmed = true
+	module.exports = "data:image/png;base64,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"
 
-	  Vue = vue
-	  isBrowserify = browserify
+/***/ },
+/* 22 */
+/***/ function(module, exports, __webpack_require__) {
 
-	  exports.compatible = !!Vue.internalDirectives
-	  if (!exports.compatible) {
-	    console.warn(
-	      '[HMR] vue-loader hot reload is only compatible with ' +
-	      'Vue.js 1.0.0+.'
-	    )
-	    return
-	  }
-
-	  // patch view directive
-	  patchView(Vue.internalDirectives.component)
-	  console.log('[HMR] Vue component hot reload shim applied.')
-	  // shim router-view if present
-	  var routerView = Vue.elementDirective('router-view')
-	  if (routerView) {
-	    patchView(routerView)
-	    console.log('[HMR] vue-router <router-view> hot reload shim applied.')
-	  }
+	var __vue_script__, __vue_template__
+	__webpack_require__(25)
+	__vue_script__ = __webpack_require__(23)
+	if (__vue_script__ &&
+	    __vue_script__.__esModule &&
+	    Object.keys(__vue_script__).length > 1) {
+	  console.warn("[vue-loader] components/listItem.vue: named exports in *.vue files are ignored.")}
+	__vue_template__ = __webpack_require__(24)
+	module.exports = __vue_script__ || {}
+	if (module.exports.__esModule) module.exports = module.exports.default
+	if (__vue_template__) {
+	(typeof module.exports === "function" ? (module.exports.options || (module.exports.options = {})) : module.exports).template = __vue_template__
 	}
-
-	/**
-	 * Shim the view directive (component or router-view).
-	 *
-	 * @param {Object} View
-	 */
-
-	function patchView (View) {
-	  var unbuild = View.unbuild
-	  View.unbuild = function (defer) {
-	    if (!this.hotUpdating) {
-	      var prevComponent = this.childVM && this.childVM.constructor
-	      removeView(prevComponent, this)
-	      // defer = true means we are transitioning to a new
-	      // Component. Register this new component to the list.
-	      if (defer) {
-	        addView(this.Component, this)
-	      }
-	    }
-	    // call original
-	    return unbuild.call(this, defer)
-	  }
-	}
-
-	/**
-	 * Add a component view to a Component's hot list
-	 *
-	 * @param {Function} Component
-	 * @param {Directive} view - view directive instance
-	 */
-
-	function addView (Component, view) {
-	  var id = Component && Component.options.hotID
-	  if (id) {
-	    if (!map[id]) {
-	      map[id] = {
-	        Component: Component,
-	        views: [],
-	        instances: []
-	      }
-	    }
-	    map[id].views.push(view)
-	  }
-	}
-
-	/**
-	 * Remove a component view from a Component's hot list
-	 *
-	 * @param {Function} Component
-	 * @param {Directive} view - view directive instance
-	 */
-
-	function removeView (Component, view) {
-	  var id = Component && Component.options.hotID
-	  if (id) {
-	    map[id].views.$remove(view)
-	  }
-	}
-
-	/**
-	 * Create a record for a hot module, which keeps track of its construcotr,
-	 * instnaces and views (component directives or router-views).
-	 *
-	 * @param {String} id
-	 * @param {Object} options
-	 */
-
-	exports.createRecord = function (id, options) {
-	  if (typeof options === 'function') {
-	    options = options.options
-	  }
-	  if (typeof options.el !== 'string' && typeof options.data !== 'object') {
-	    makeOptionsHot(id, options)
-	    map[id] = {
-	      Component: null,
-	      views: [],
-	      instances: []
-	    }
-	  }
-	}
-
-	/**
-	 * Make a Component options object hot.
-	 *
-	 * @param {String} id
-	 * @param {Object} options
-	 */
-
-	function makeOptionsHot (id, options) {
-	  options.hotID = id
-	  injectHook(options, 'created', function () {
-	    var record = map[id]
-	    if (!record.Component) {
-	      record.Component = this.constructor
-	    }
-	    record.instances.push(this)
-	  })
-	  injectHook(options, 'beforeDestroy', function () {
-	    map[id].instances.$remove(this)
-	  })
-	}
-
-	/**
-	 * Inject a hook to a hot reloadable component so that
-	 * we can keep track of it.
-	 *
-	 * @param {Object} options
-	 * @param {String} name
-	 * @param {Function} hook
-	 */
-
-	function injectHook (options, name, hook) {
-	  var existing = options[name]
-	  options[name] = existing
-	    ? Array.isArray(existing)
-	      ? existing.concat(hook)
-	      : [existing, hook]
-	    : [hook]
-	}
-
-	/**
-	 * Update a hot component.
-	 *
-	 * @param {String} id
-	 * @param {Object|null} newOptions
-	 * @param {String|null} newTemplate
-	 */
-
-	exports.update = function (id, newOptions, newTemplate) {
-	  var record = map[id]
-	  // force full-reload if an instance of the component is active but is not
-	  // managed by a view
-	  if (!record || (record.instances.length && !record.views.length)) {
-	    console.log('[HMR] Root or manually-mounted instance modified. Full reload may be required.')
-	    if (!isBrowserify) {
-	      window.location.reload()
-	    } else {
-	      // browserify-hmr somehow sends incomplete bundle if we reload here
-	      return
-	    }
-	  }
-	  if (!isBrowserify) {
-	    // browserify-hmr already logs this
-	    console.log('[HMR] Updating component: ' + format(id))
-	  }
-	  var Component = record.Component
-	  // update constructor
-	  if (newOptions) {
-	    // in case the user exports a constructor
-	    Component = record.Component = typeof newOptions === 'function'
-	      ? newOptions
-	      : Vue.extend(newOptions)
-	    makeOptionsHot(id, Component.options)
-	  }
-	  if (newTemplate) {
-	    Component.options.template = newTemplate
-	  }
-	  // handle recursive lookup
-	  if (Component.options.name) {
-	    Component.options.components[Component.options.name] = Component
-	  }
-	  // reset constructor cached linker
-	  Component.linker = null
-	  // reload all views
-	  record.views.forEach(function (view) {
-	    updateView(view, Component)
-	  })
-	  // flush devtools
-	  if (window.__VUE_DEVTOOLS_GLOBAL_HOOK__) {
-	    window.__VUE_DEVTOOLS_GLOBAL_HOOK__.emit('flush')
-	  }
-	}
-
-	/**
-	 * Update a component view instance
-	 *
-	 * @param {Directive} view
-	 * @param {Function} Component
-	 */
-
-	function updateView (view, Component) {
-	  if (!view._bound) {
-	    return
-	  }
-	  view.Component = Component
-	  view.hotUpdating = true
-	  // disable transitions
-	  view.vm._isCompiled = false
-	  // save state
-	  var state = extractState(view.childVM)
-	  // remount, make sure to disable keep-alive
-	  var keepAlive = view.keepAlive
-	  view.keepAlive = false
-	  view.mountComponent()
-	  view.keepAlive = keepAlive
-	  // restore state
-	  restoreState(view.childVM, state, true)
-	  // re-eanble transitions
-	  view.vm._isCompiled = true
-	  view.hotUpdating = false
-	}
-
-	/**
-	 * Extract state from a Vue instance.
-	 *
-	 * @param {Vue} vm
-	 * @return {Object}
-	 */
-
-	function extractState (vm) {
-	  return {
-	    cid: vm.constructor.cid,
-	    data: vm.$data,
-	    children: vm.$children.map(extractState)
-	  }
-	}
-
-	/**
-	 * Restore state to a reloaded Vue instance.
-	 *
-	 * @param {Vue} vm
-	 * @param {Object} state
-	 */
-
-	function restoreState (vm, state, isRoot) {
-	  var oldAsyncConfig
-	  if (isRoot) {
-	    // set Vue into sync mode during state rehydration
-	    oldAsyncConfig = Vue.config.async
-	    Vue.config.async = false
-	  }
-	  // actual restore
-	  if (isRoot || !vm._props) {
-	    vm.$data = state.data
+	if (false) {(function () {  module.hot.accept()
+	  var hotAPI = require("vue-hot-reload-api")
+	  hotAPI.install(require("vue"), false)
+	  if (!hotAPI.compatible) return
+	  var id = "_v-62c42bba/listItem.vue"
+	  if (!module.hot.data) {
+	    hotAPI.createRecord(id, module.exports)
 	  } else {
-	    Object.keys(state.data).forEach(function (key) {
-	      if (!vm._props[key]) {
-	        // for non-root, only restore non-props fields
-	        vm.$data[key] = state.data[key]
-	      }
-	    })
+	    hotAPI.update(id, module.exports, __vue_template__)
 	  }
-	  // verify child consistency
-	  var hasSameChildren = vm.$children.every(function (c, i) {
-	    return state.children[i] && state.children[i].cid === c.constructor.cid
-	  })
-	  if (hasSameChildren) {
-	    // rehydrate children
-	    vm.$children.forEach(function (c, i) {
-	      restoreState(c, state.children[i])
-	    })
-	  }
-	  if (isRoot) {
-	    Vue.config.async = oldAsyncConfig
-	  }
+	})()}
+
+/***/ },
+/* 23 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	module.exports = {
+		data: function data() {
+			return {
+				list: {
+					name: "",
+					time: "",
+					head: "",
+					joiner: "",
+					action: "",
+					title: "",
+					content: "",
+					comments: ""
+				}
+			};
+		}
+	};
+
+/***/ },
+/* 24 */
+/***/ function(module, exports) {
+
+	module.exports = "\n\n\n\n<!-- li的宽度先写死 实际是由右边栏决定的 -->\n<li>\n\t<div>\n\t\t<div class=\"list-item-head\">\n\t\t\t\n\t\t</div>\n\t\t<p class=\"list-item-vote\">\n\t\t\t<span>\n\t\t\t\t817\n\t\t\t</span>\n\t\t</p>\n\t</div>\n\t<div>\n\t\t<p>\n\t\t\t顾扯淡、徐湘楠 赞同答案\n\t\t</p>\n\t\t<p>\n\t\t\t51 分钟前\n\t\t</p>\n\t\t<h3>\n\t\t\t如何评价动画电影 《大鱼海棠》\n\t\t\t<span class=\"list-item-del\">\n\t\t\t</span>\n\t\t</h3>\n\t</div>\n\t<p>\n\t\t\t为什么没有大V出来给大家发声音？我就想问问就现在微博上面还有哪几个经常指出政府或法规错误，还要关心弱势群体，在乎百姓感受，偶尔用自己的专业知识提出切实可行而且在理的整改意见，目的是想让社会变得更好。同时粉丝数和社会地位都能配得上「大V」两个...<span>显示全部</span>\n\t</p>\n\t<p class=\"list-item-bottom\">\n\t\t<span></span><span>关注问题</span>\n\t\t<span></span><span><span>4</span>条评论</span>\n\t\t<span></span><span>作者保留权利</span>\n\t</p>\n</li>\n";
+
+/***/ },
+/* 25 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+
+	// load the styles
+	var content = __webpack_require__(26);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(12)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!./../node_modules/css-loader/index.js!./../node_modules/vue-loader/lib/style-rewriter.js!./../node_modules/vue-loader/lib/selector.js?type=style&index=0!./listItem.vue", function() {
+				var newContent = require("!!./../node_modules/css-loader/index.js!./../node_modules/vue-loader/lib/style-rewriter.js!./../node_modules/vue-loader/lib/selector.js?type=style&index=0!./listItem.vue");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
 	}
 
-	function format (id) {
-	  var match = id.match(/[^\/]+\.vue$/)
-	  return match ? match[0] : id
-	}
+/***/ },
+/* 26 */
+/***/ function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(4)();
+	// imports
+
+
+	// module
+	exports.push([module.id, "\n\n", ""]);
+
+	// exports
 
 
 /***/ }

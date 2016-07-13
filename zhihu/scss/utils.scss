@@ -55,7 +55,9 @@ table {
 .mt2{
 	margin-top:20px;
 }
-
+.ml2{
+	margin-left:20px;
+}
 .mt3{
 	margin-top:30px;
 }
@@ -73,7 +75,14 @@ table {
 .mb1{
 	margin-bottom:10px;
 }
-
+.ml1{
+	margin-left:10px;
+}
 .border{
 	border:1px solid #d5d5d5;
+}
+.ellipsis{
+	white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }

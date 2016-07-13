@@ -1,8 +1,9 @@
 require('../scss/utils.scss');
-var Vue = require('vue');
-var Nav = require('../components/nav.vue');
-console.log('nav');
-console.log(Nav);
+var Vue = require('vue'),
+	Nav = require('../components/nav.vue');
+	Item = require('../components/listItem.vue');
+
+
 var Parent = Vue.extend({
 	template: '<nav><navtem></navtem></nav>',
 	components: {
@@ -10,8 +11,17 @@ var Parent = Vue.extend({
 	}
 });
 
-Vue.component('nav-component',Parent)
+var List = Vue.extend({
+	template:'<ul><item></item></ul>',
+	components:{
+		'item':Item
+	}
+});
+
+Vue.component('list-component',List);
+Vue.component('nav-component',Parent);
 
 new Vue({
 	el:'body'
 });
+

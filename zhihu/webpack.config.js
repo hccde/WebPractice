@@ -1,7 +1,7 @@
 var webpack = require('webpack')
 module.exports = {
 	entry:{
-		login:['webpack/hot/dev-server','./js/login.es6.js'],
+		login:['./js/login.es6.js'],
 		index:['./js/index.es6.js']
 	},
 	output:{
@@ -16,10 +16,6 @@ module.exports = {
 			{test: /\.(png|jpg)$/, loader: 'url?limit=8192=dest/image/[name].[ext]'}
 		]
 	},
-	watch:true,
-	 plugins: [
-    	new webpack.HotModuleReplacementPlugin()
-  	],
 }
 
 //browser-sync start --server --files 监听 不用webpack dev server 
