@@ -1,5 +1,7 @@
 <style type="text/css">
-	
+	.list-li{
+		width: ;
+	}
 </style>
 <template>
 <!-- li的宽度先写死 实际是由右边栏决定的 -->
