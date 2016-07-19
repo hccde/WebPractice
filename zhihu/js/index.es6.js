@@ -1,4 +1,5 @@
 require('../scss/utils.scss');
+require('../dest/image/spritestotal.png');
 var Vue = require('vue'),
 	Nav = require('../components/nav.vue');
 	Item = require('../components/listItem.vue');
