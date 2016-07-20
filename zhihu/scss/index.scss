@@ -1,2 +1,121 @@
 @import 'utils.scss';
 @import 'var.scss';
+
+@mixin bgIcon($posi){
+	width: 24px;
+	height: 24px;
+	vertical-align:middle;
+	margin-right:5px;
+	display: inline-block;
+	background-image:url("../dest/image/icon.png");
+	background-position:unquote($posi);
+}
+
+.index-container{
+	width:960px;
+	margin:0 auto;
+	padding:0 5px;
+	margin-top:30px;
+}
+.index-main-left{
+	width:642px;
+
+}
+
+.index-func-nav{
+	height:50px;
+	font-size:0;
+	background:white;
+	p{
+	display: inline-block;
+	padding-bottom:12px;
+	padding-right:20px;
+	background:#fff;
+		img{
+			display: inline-block;
+			border-radius:3px;
+			width: 38px;
+			height: 38px;	
+		}
+	}
+
+	ul{
+		width: 578px;
+		height: 50px;
+		vertical-align: top;
+		background-color:#fafafa;
+		border-radius:4px;
+		display: inline-block;
+		border:1px solid #f0f0f0;
+		position: relative;
+
+		&:after{
+			content: '';
+			width: 1px;
+			height: 50px;
+			display: inline-block;
+			vertical-align:middle;
+		}
+
+		.nav-arrow{
+				position:absolute;
+				width: 0;
+    			height: 0;
+    			left: -13px;
+    			top:10px;
+    			border-top: 13px solid #f0f0f0;
+    			border-left: 13px solid transparent;
+    			&:after{
+    			content: '';
+    			position:absolute;
+				width: 0;
+    			height: 0;
+    			left: -11px;
+    			top:-12px;
+    			border-top: 12px solid #fafafa;
+    			border-left: 12px solid transparent;	
+    			}
+			}
+
+		li{
+			width: 114.89px;
+			height: 30px;
+			font-size: 14px;
+			display: inline-block;
+			text-align: center;
+			border-left:1px solid #f0f0f0;
+			border-right:1px solid #f0f0f0;
+			vertical-align: middle;
+			line-height: 30px;
+			color:#6c829f;
+			
+			.nav-quest-icon{
+				@include bgIcon('-52px 0');
+			}
+			.nav-answer-icon{
+				@include bgIcon('0 0');
+			}
+			.nav-article-icon{
+				@include bgIcon('0 -26px');
+			}
+
+			&:first-child{
+				border-left:none;
+			}
+			&:last-child{
+				border:none;
+				width:206.33px;
+				padding-right:20px;
+				color:#999;
+				text-align:right;
+				font-size: 13px;
+
+			}
+		}
+	}
+
+	}
+
+.index-main-right{
+	width:298px;
+}
