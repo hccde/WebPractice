@@ -19,6 +19,7 @@
 }
 .index-main-left{
 	width:642px;
+	display:inline-block;
 
 }
 
@@ -79,14 +80,14 @@
 
 		li{
 			width: 114.89px;
-			height: 30px;
+			height: 20px;
 			font-size: 14px;
 			display: inline-block;
 			text-align: center;
 			border-left:1px solid #f0f0f0;
-			border-right:1px solid #f0f0f0;
+			// border-right:1px solid #f0f0f0;
 			vertical-align: middle;
-			line-height: 30px;
+			line-height: 20px;
 			color:#6c829f;
 			
 			.nav-quest-icon{
@@ -116,6 +117,158 @@
 
 	}
 
-.index-main-right{
-	width:298px;
+.index-fed-list-setting{
+		margin-top: 20px;
+		height: 40px;
+		border-bottom:1px solid #ccc;
+		line-height: 40px;
+		& *{
+			font-family: none;
+		}
+
 }
+.index-fed-list-setting{
+font-size:14px;
+font-weight:800;
+color:#666;
+}
+
+.index-fed-icon{
+	background-image:url("../dest/image/spritestotal.png");
+	background-position:-71px -88px;
+	display: inline-block;
+	vertical-align: middle;
+	width:16px;
+	height:16px;
+	margin-right:5px;
+}
+.index-fed-setting{
+	float:right;
+	font-size:13px;
+	color:#999;
+	font-weight:100;
+	span{
+		width:16px;
+		display: inline-block;
+		vertical-align: middle;
+		height:16px;
+		background-position:-88px -148px;
+		background-image:url("../dest/image/spritestotal.png");
+	}
+}
+
+$imgList:("../dest/image/spritestotal.png","../dest/image/spritestotal.png","../dest/image/spritestotal.png","../dest/image/spritestotal.png","../dest/image/spritestotal.png","../dest/image/spritesIndex.png","../dest/image/right.svg");
+$imagePosi:("-167px -4px","-183px -4px","-200px -4px","-234px -4px","-269px -4px","-19px -51px","left center");
+@mixin mainRightIcon($pic,$value){
+	background-image:url($pic);
+	background-position:unquote($value);
+	height:14px;
+	width:14px;
+	display:inline-block;
+	vertical-align:top;
+};
+
+.index-main-right{
+	width:248px;
+	display:inline-block;
+	vertical-align:top;
+	margin-left:50px;
+	.index-left-item{
+		width: 100%;
+		font-size: 13px;
+		color: #666;
+		line-height: 15px;
+		border-bottom:1px solid #ccc;
+		.index-left-tips{
+			width: 30px;
+			height: 16px;
+			display: inline-block;
+			border-radius:6px;
+			background-color:#888;
+			color: white;
+			text-align: center;
+		}
+
+		li{
+			height: 30px;
+		}
+		@for $var from 1 through 7{
+			.index-right-span#{$var} {
+				@include mainRightIcon(nth($imgList,$var),nth($imagePosi,$var));
+			}
+		};
+		.index-right-span7{
+			width: 13px;
+			height: 13px;
+		}
+
+	}
+
+	.booter{
+		font-size:13px;
+		color: #999;
+		margin-top: 10px;
+		span{
+			padding:0 0.5px;
+			&:first-child{
+				padding-left: 0px;
+			}
+			&:nth-child(2n){
+				font-weight: 800;
+			}
+		}
+	}
+
+	.index-left-itemIm{
+			h3{
+				margin-top: 20px;
+				color: #222;
+				font-size: 14px;
+				font-weight: 700;
+			}
+		width: 100%;
+		font-size: 13px;
+		color: #666;
+		border-bottom:1px solid #ccc;
+		& *{
+			font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
+
+		}
+
+			.index-left-itemIm-spe{
+				height: 60px;
+				line-height: 60px;
+				margin-top: 0px !important;
+				vertical-align: middle;
+				span{
+					background-image:url("../dest/image/spritesleft.png");
+					background-position:0 0;
+					display: inline-block;
+					height: 25px;
+					width: 25px;
+					vertical-align: middle;
+				}
+			}
+
+			.index-left-more{
+				color:#698EB6;
+				font-size:12px;
+				float: right;
+				font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif;
+			}
+			ul li{
+				height: 60px;
+				&:first-child{
+					margin-top: 20px;
+				}
+				img{
+					width: 25px;
+					height: 25px;
+					vertical-align: middle;
+					margin-right:5px;
+				}
+
+			}
+
+		}
+}	

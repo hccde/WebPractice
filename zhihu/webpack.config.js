@@ -13,7 +13,7 @@ module.exports = {
 			{test:/\.vue$/,loader:"vue"},
 			{test:/\.es6.js$/,loader:"babel"},
 			{test:/\.scss$/,loader:"style-loader!css-loader!sass-loader"},
-			{test: /\.(png|jpg)$/, loader: 'url?=dest/image/[name].[ext]'}
+			{test: /\.(png|jpg|svg)$/, loader: 'url?=dest/image/[name].[ext]'}
 		]
 	},
 }
