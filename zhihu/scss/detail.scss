@@ -6,10 +6,63 @@
 	margin:0 auto;
 	padding:0 5px;
 	margin-top:30px;
+	font-size:13px;
 }
 .detail-main-left{
 	width:642px;
 	display:inline-block;
+	.detail-tag{
+		li{
+			display: inline-block;
+			background-color: #eff6fa;
+			width:auto;
+			color: #259;
+			padding:0 10px;
+			border-radius: 10px;
+			line-height: 22px;
+			height:22px;
+			margin-right: 2px;
+		}
+		.detail-tag-edit{
+			margin-left: 10px;
+			font-size: 12px;
+			color: #999;
+			.detail-ques-edit{
+				display: inline-block;
+				height: 12px;
+				width: 12px;
+				background-image:url("../dest/image/spritestotal.png");
+				background-position:-118px -50px;
+				vertical-align: middle;
+			}
+		}
+	}
+
+	.detail-ques-describle{
+		margin-top: 15px;
+
+		h3{
+			font-size: 18px;
+			color: #222;
+			font-weight: 600;
+			font-family: none;
+			margin-bottom: 15px;
+		}
+		.detail-title-edit{
+			margin-left: 10px;
+			font-size: 12px;
+			color: #999;
+			font-weight: 100;
+			.detail-ques-edit{
+				display: inline-block;
+				height: 12px;
+				width: 12px;
+				background-image:url("../dest/image/spritestotal.png");
+				background-position:-118px -50px;
+				vertical-align: middle;
+			}
+		}
+	}
 
 }
 .detail-main-right{
