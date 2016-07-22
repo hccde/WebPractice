@@ -2,7 +2,8 @@ var webpack = require('webpack')
 module.exports = {
 	entry:{
 		login:['./js/login.es6.js'],
-		index:['./js/index.es6.js']
+		index:['./js/index.es6.js'],
+		detail:['./js/detail.es6.js']
 	},
 	output:{
 		path:'./dest/output/',
