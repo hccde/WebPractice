@@ -18,12 +18,13 @@
 			display: inline-block;
     		border-top-width: 0;
     		border-bottom-color: #698ebf;
+    		margin-top: 10px;
 		}
 		strong{
 			display:inline-block;
 			width: 38px;
 			text-align: center;
-			height: 20px;
+			height: 16px;
 			line-height: 20px;
 			margin-top: 5px;
 			font-size: 13px;
