@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<head>
+	<meta charset="utf-8">
+</head>
+<style type="text/css">
+	html,body{
+		width: 100%;
+	}
+</style>
+<body>
+	<input type="file" name="" id="file">
+	<canvas id = "canvas" style="width:1000px;heigth:800px;">
+		unsupport
+	</canvas>
+	<script>
+		var file = document.getElementById('file');
+		var reader = new FileReader();
+		var pic;
+		file.addEventListener('change',function(e){
+			reader.readAsDataURL(file.files[0]);
+		})
+		reader.onload = function(e){
+			pic = e.target.result
+			postToCanvas(pic)
+		}
+
+
+	  	var canvas = document.getElementById('canvas');
+	  	var ctx = canvas.getContext('2d');
+	  	function postToCanvas(pic){
+	  		var img = new Image();
+	  		img.onload = function(){
+	  			ctx.drawImage(img,0,0);
+	  			var imagedata = ctx.getImageData(0,0,117,38);
+	  			writeImg(imagedata);
+	  		}
+	  		img.src = pic;
+	  	}
+
+	  	function writeImg(imagedata){
+	  		ctx.putImageData(dealimg(imagedata),0,0);
+	  		console.log(ctx.getImageData(0,0,117,38));
+	  	}
+
+	  	function dealimg(imagedata){
+	  		var count = 0;
+		   //  imagedata.data.map(function(e,index){
+	  		// 	count = count+1;
+	  		// 	if(count % 4 == 0){
+	  		// 		imagedata.data[index-2] = 255;
+	  		// 	}
+	  		// });
+	  		for(var i = 0;i<imagedata.data.length;){
+	  			var gray = (imagedata.data[i]*30+imagedata.data[i+1]*59+imagedata.data[i+2]*11)/100;
+	  			imagedata.data[i] = gray;
+	  			imagedata.data[i+1] = gray;
+	  			imagedata.data[i+2] = gray;
+	  			i = i+4;
+	  		}
+	  		return imagedata;
+	  	}
+	 
+	</script>
+</html>
