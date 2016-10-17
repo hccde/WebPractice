@@ -103,4 +103,3 @@ for(var i = 0;i<total;i++){
 	// setTimeout(loop,2000);
 }
 
-// model[10] = 1;
